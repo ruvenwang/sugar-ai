@@ -54,6 +54,72 @@ mode that uses a lightweight, CPU-friendly model.
 DEV_MODE=1 python main.py
 ```
 
+## Supported AI Providers
+
+Sugar-AI supports multiple AI model providers through a flexible provider abstraction layer. This allows you to use different model APIs depending on your deployment environment and preferences.
+
+### Available Providers
+
+The following AI providers are supported:
+
+| Provider | Model Example | API Key Required | Best For |
+|----------|---------------|------------------|----------|
+| HuggingFace | `distilbert-base-uncased` | No (local) | Low-resource environments, privacy-first deployments |
+| OpenAI | `gpt-4`, `gpt-3.5-turbo` | Yes | High-quality responses, production use |
+| Anthropic | `claude-3-opus`, `claude-3-sonnet` | Yes | Safety-focused applications, educational settings |
+| Ollama | `llama2`, `mistral` | No (local) | Self-hosted deployments, offline operation |
+
+### Using Different Providers
+
+To specify a provider, use the model name with a provider prefix in your API requests or configuration:
+
+**OpenAI example:**
+```bash
+curl -X POST "http://localhost:8000/ask-llm" \
+  -H "X-API-Key: sugarai2024" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "question": "Explain how loops work in Python",
+    "model": "openai/gpt-4"
+  }'
+```
+
+**Anthropic example:**
+```bash
+curl -X POST "http://localhost:8000/ask-llm" \
+  -H "X-API-Key: sugarai2024" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "question": "What is recursion?",
+    "model": "anthropic/claude-3-opus"
+  }'
+```
+
+**Ollama (self-hosted) example:**
+```bash
+curl -X POST "http://localhost:8000/ask-llm" \
+  -H "X-API-Key: sugarai2024" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "question": "How do I create a function?",
+    "model": "ollama/llama2"
+  }'
+```
+
+### Setting API Keys
+
+For external providers (OpenAI, Anthropic), set the appropriate environment variables:
+
+```bash
+# OpenAI
+export OPENAI_API_KEY="sk-..."
+
+# Anthropic
+export ANTHROPIC_API_KEY="sk-ant-..."
+
+# Ollama (ensure Ollama server is running)
+ollama serve
+```
 
 ### Run the server
 
