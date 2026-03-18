@@ -551,6 +551,92 @@ Remove the `--quantize` flag if you prefer running without 4‑bit quantization.
 4. **API and Docker Route:**
      - Optionally, combine these changes by deploying the updated version via Docker and testing the FastAPI endpoints as described above.
 
+## Using Sugar-AI for Student Reflection (Educational Use)
+
+Sugar-AI can be used to support student reflection and metacognitive development—aligning with Sugar's learning philosophy. Teachers can leverage AI-powered endpoints to help students think critically about their projects and learning.
+
+### Reflection Prompt Example
+
+Use the `/ask-llm-prompted` endpoint with a custom system prompt to guide student reflection:
+
+```bash
+curl -X POST "http://localhost:8000/ask-llm-prompted" \
+  -H "X-API-Key: sugarai2024" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "question": "I created a game with Pygame but it has a bug I cannot find",
+    "custom_prompt": "You are an educational mentor helping a learner reflect on their project. Ask thoughtful questions to help them debug and learn. Questions should guide them to think about: What was your goal? What does the code currently do? What did you expect? What is the difference?",
+    "temperature": 0.7,
+    "top_p": 0.9
+  }'
+```
+
+### Reflection Guidelines for Different Learning Stages
+
+**For Beginners** (Learning Basic Concepts):
+```json
+{
+  "custom_prompt": "You are a patient mentor helping a beginner programmer. Ask warm, encouraging questions. Guide them step-by-step: What are you trying to create? What do you know so far? What could you try next?",
+  "temperature": 0.6,
+  "top_k": 40
+}
+```
+
+**For Intermediate Learners** (Building Projects):
+```json
+{
+  "custom_prompt": "You are a code reviewer helping a student improve their project. Ask questions about design choices, testing, and improvements: Why did you use this approach? How could you test it? What would you do differently next time?",
+  "temperature": 0.7,
+  "top_p": 0.85
+}
+```
+
+**For Advanced Learners** (Optimization & Design):
+```json
+{
+  "custom_prompt": "You are a peer mentor discussing advanced programming concepts. Explore trade-offs: What are the performance implications? How would this scale? What patterns could you apply here?",
+  "temperature": 0.8,
+  "top_p": 0.9
+}
+```
+
+### Integration with Sugar Activities
+
+Teachers can integrate Sugar-AI reflection support into custom Sugar Activities by:
+
+1. Creating a Sugar Activity that makes HTTP requests to the `/ask-llm-prompted` endpoint
+2. Using custom system prompts tailored to the learning objective
+3. Storing student reflections for portfolio assessment
+
+Example integration:
+```python
+import requests
+import json
+
+def get_reflection_prompt(activity_context, learning_stage):
+    """Get AI-guided reflection for a student activity"""
+    api_key = "sugarai2024"  # Set via environment or secure configuration
+    
+    prompt = {
+        "custom_prompt": f"Help a {learning_stage} learner reflect on their {activity_context} project.",
+        "question": "What did you learn from this activity?",
+        "temperature": 0.7,
+        "top_p": 0.85
+    }
+    
+    response = requests.post(
+        "http://localhost:8000/ask-llm-prompted",
+        headers={"X-API-Key": api_key, "Content-Type": "application/json"},
+        data=json.dumps(prompt)
+    )
+    
+    return response.json()["answer"]
+
+# Usage in a Sugar Activity
+reflection = get_reflection_prompt("Pygame game", "beginner")
+print(reflection)
+```
+
 ## Troubleshooting CUDA Memory Issues
 
 If you encounter CUDA out-of-memory errors, consider running the agent on CPU or adjust CUDA settings:
