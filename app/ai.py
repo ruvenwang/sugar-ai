@@ -7,7 +7,7 @@ from transformers import pipeline
 from langchain_community.vectorstores import FAISS
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_community.document_loaders import PyMuPDFLoader, TextLoader
-from langchain_core.runnables import RunnablePassthrough
+from langchain_core.runnables import RunnablePassthrough, RunnableParallel
 from langchain_core.prompts import ChatPromptTemplate
 from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
 from typing import Optional, List
@@ -213,7 +213,7 @@ class RAGAgent:
         
         # first chain: prompt -> combine messages -> model -> extract answer
         first_chain = (
-            chain_input
+            RunnableParallel(**chain_input)
             | self.prompt
             | combine_messages
             | self.model
